@@ -5,29 +5,17 @@ OrdererOrgs:
       - Hostname: healthcare_orderer
 
 PeerOrgs:
-  - Name: HospitalOrg
-    Domain: hospital.example.com
-    Template:
-      Count: 1
-    Users:
-      Count: 1
-
-  - Name: InsuranceOrg
-    Domain: insurance.example.com
-    Template:
-      Count: 1
-    Users:
-      Count: 1
-
   - Name: PatientOrg
     Domain: patient.example.com
+    EnableNodeOUs: true
     Template:
       Count: 1
     Users:
       Count: 1
 
-  - Name: PharmacyOrg
-    Domain: pharmacy.example.com
+  - Name: HospitalOrg
+    Domain: hospital.example.com
+    EnableNodeOUs: true
     Template:
       Count: 1
     Users:
@@ -35,6 +23,23 @@ PeerOrgs:
 
   - Name: LaboratoryOrg
     Domain: laboratory.example.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+
+  - Name: PharmacyOrg
+    Domain: pharmacy.example.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+    Users:
+      Count: 1
+
+  - Name: InsuranceOrg
+    Domain: insurance.example.com
+    EnableNodeOUs: true
     Template:
       Count: 1
     Users:
