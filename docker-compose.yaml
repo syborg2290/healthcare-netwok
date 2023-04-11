@@ -1,102 +1,86 @@
 version: '2'
 
 services:
+
   healthcare_orderer.example.com:
     container_name: healthcare_orderer.example.com
     image: hyperledger/fabric-orderer
     environment:
-      - ORDERER_GENERAL_LOGLEVEL=info
+      - ORDERER_GENERAL_LOGLEVEL=debug
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
       - ORDERER_GENERAL_GENESISMETHOD=file
-      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/genesis.block
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
       - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=false
     volumes:
-      - ./config/crypto-config/ordererOrganizations/example.com/orderers/healthcare_orderer.example.com/:/var/hyperledger/orderer
+      - ./crypto-config/ordererOrganizations/example.com/orderers/healthcare_orderer.example.com/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config/ordererOrganizations/example.com/orderers/healthcare_orderer.example.com/orderer.genesis.block:/var/hyperledger/orderer/orderer.genesis.block
     ports:
-      - 13050:13050
+      - 17052:17050
 
-  peer0.patient.example.com:
-    container_name: peer0.patient.example.com
+  patient.example.com:
+    container_name: patient.example.com
     image: hyperledger/fabric-peer
     environment:
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_PEER_ID=peer0.patient.example.com
-      - CORE_LOGGING_LEVEL=info
+      - CORE_PEER_ADDRESS=patient.example.com:7051
       - CORE_PEER_LOCALMSPID=PatientMSP
-      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
-      - CORE_PEER_ADDRESS=peer0.patient.example.com:7051
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer
+      - CORE_PEER_TLS_ENABLED=false
     volumes:
-      - /var/run/docker.sock:/host/var/run/docker.sock
-      - ./config/crypto-config/peerOrganizations/patient.example.com/peers/peer0.patient.example.com/:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/example.com/peers/patient.example.com/msp:/etc/hyperledger/msp/peer
     ports:
-      - 12051:7051
-      - 12053:7053
+      - 17053:17053
 
-  peer0.hospital.example.com:
-    container_name: peer0.hospital.example.com
+  hospital.example.com:
+    container_name: hospital.example.com
     image: hyperledger/fabric-peer
     environment:
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_PEER_ID=peer0.hospital.example.com
-      - CORE_LOGGING_LEVEL=info
+      - CORE_PEER_ADDRESS=hospital.example.com:7051
       - CORE_PEER_LOCALMSPID=HospitalMSP
-      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
-      - CORE_PEER_ADDRESS=peer0.hospital.example.com:7051
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer
+      - CORE_PEER_TLS_ENABLED=false
     volumes:
-      - /var/run/docker.sock:/host/var/run/docker.sock
-      - ./config/crypto-config/peerOrganizations/hospital.example.com/peers/peer0.hospital.example.com/:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/example.com/peers/hospital.example.com/msp:/etc/hyperledger/msp/peer
     ports:
-      - 8051:7051
-      - 8053:7053
+      - 18053:17053
 
-  peer0.laboratory.example.com:
-    container_name: peer0.laboratory.example.com
+  laboratory.example.com:
+    container_name: laboratory.example.com
     image: hyperledger/fabric-peer
     environment:
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_PEER_ID=peer0.laboratory.example.com
-      - CORE_LOGGING_LEVEL=info
+      - CORE_PEER_ADDRESS=laboratory.example.com:7051
       - CORE_PEER_LOCALMSPID=LaboratoryMSP
-      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
-      - CORE_PEER_ADDRESS=peer0.laboratory.example.com:7051
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer
+      - CORE_PEER_TLS_ENABLED=false
     volumes:
-      - /var/run/docker.sock:/host/var/run/docker.sock
-      - ./config/crypto-config/peerOrganizations/laboratory.example.com/peers/peer0.laboratory.example.com/:/etc
+      - ./crypto-config/peerOrganizations/example.com/peers/laboratory.example.com/msp:/etc/hyperledger/msp/peer
     ports:
-      - 14051:7051
-      - 14053:7053  
+      - 19053:17053
 
-  peer0.insurance.example.com:
-    container_name: peer0.insurance.example.com
+  pharmacy.example.com:
+    container_name: pharmacy.example.com
     image: hyperledger/fabric-peer
     environment:
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_PEER_ID=peer0.insurance.example.com
-      - CORE_LOGGING_LEVEL=info
-      - CORE_PEER_LOCALMSPID=insuranceMSP
-      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
-      - CORE_PEER_ADDRESS=peer0.insurance.example.com:7051
+      - CORE_PEER_ADDRESS=pharmacy.example.com:7051
+      - CORE_PEER_LOCALMSPID=PharmacyMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer
+      - CORE_PEER_TLS_ENABLED=false
     volumes:
-      - /var/run/docker.sock:/host/var/run/docker.sock
-      - ./config/crypto-config/peerOrganizations/insurance.example.com/peers/peer0.insurance.example.com/:/etc
+      - ./crypto-config/peerOrganizations/example.com/peers/pharmacy.example.com/msp:/etc/hyperledger/msp/peer
     ports:
-      - 10051:7051
-      - 10053:7053    
+      - 10053:17053
 
-  peer0.pharmacy.example.com:
-    container_name: peer0.pharmacy.example.com
+  insurance.example.com:
+    container_name: insurance.example.com
     image: hyperledger/fabric-peer
     environment:
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_PEER_ID=peer0.pharmacy.example.com
-      - CORE_LOGGING_LEVEL=info
-      - CORE_PEER_LOCALMSPID=pharmacyMSP
-      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
-      - CORE_PEER_ADDRESS=peer0.pharmacy.example.com:7051
+      - CORE_PEER_ADDRESS=insurance.example.com:7051
+      - CORE_PEER_LOCALMSPID=InsuranceMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer
+      - CORE_PEER_TLS_ENABLED=false
     volumes:
-      - /var/run/docker.sock:/host/var/run/docker.sock
-      - ./config/crypto-config/peerOrganizations/pharmacy.example.com/peers/peer0.pharmacy.example.com/:/etc
+      - ./crypto-config/peerOrganizations/example.com/peers/insurance.example.com/msp:/etc/hyperledger/msp/peer
     ports:
-      - 11051:7051
-      - 11053:7053           
+      - 11053:17053
+
