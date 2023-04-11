@@ -13,6 +13,10 @@ services:
       - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
       - ORDERER_GENERAL_TLS_ENABLED=false
+      - ORDERER_GENERAL_ORDERERTYPE=kafka
+      - ORDERER_GENERAL_KAFKA_BROKERS=kafka.example.com:9092
+      - ORDERER_GENERAL_CHANNELPARTICIPATION_ENABLED=true
+      - ORDERER_GENERAL_CHANNELPARTICIPATION_PLUGIN= "OR('OrdererMSP.member')"
     volumes:
       - ./crypto-config/ordererOrganizations/example.com/orderers/healthcare_orderer.example.com/msp:/var/hyperledger/orderer/msp
       - ./crypto-config/ordererOrganizations/example.com/orderers/healthcare_orderer.example.com/orderer.genesis.block:/var/hyperledger/orderer/orderer.genesis.block
@@ -23,10 +27,14 @@ services:
     container_name: patient.example.com
     image: hyperledger/fabric-peer
     environment:
-      - CORE_PEER_ADDRESS=patient.example.com:7051
+      - CORE_PEER_ADDRESS=patient.example.com:17053
       - CORE_PEER_LOCALMSPID=PatientMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer
       - CORE_PEER_TLS_ENABLED=false
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=patient.example.com:17053
+      - CORE_PEER_POLICY_CHECKER_PLUGIN= "OR('PatientMSP.member')"
     volumes:
       - ./crypto-config/peerOrganizations/example.com/peers/patient.example.com/msp:/etc/hyperledger/msp/peer
     ports:
@@ -36,10 +44,14 @@ services:
     container_name: hospital.example.com
     image: hyperledger/fabric-peer
     environment:
-      - CORE_PEER_ADDRESS=hospital.example.com:7051
+      - CORE_PEER_ADDRESS=hospital.example.com:17053
       - CORE_PEER_LOCALMSPID=HospitalMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer
       - CORE_PEER_TLS_ENABLED=false
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=hospital.example.com:17053
+      - CORE_PEER_POLICY_CHECKER_PLUGIN= "OR('HospitalMSP.member')"
     volumes:
       - ./crypto-config/peerOrganizations/example.com/peers/hospital.example.com/msp:/etc/hyperledger/msp/peer
     ports:
@@ -49,10 +61,14 @@ services:
     container_name: laboratory.example.com
     image: hyperledger/fabric-peer
     environment:
-      - CORE_PEER_ADDRESS=laboratory.example.com:7051
+      - CORE_PEER_ADDRESS=laboratory.example.com:17053
       - CORE_PEER_LOCALMSPID=LaboratoryMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer
       - CORE_PEER_TLS_ENABLED=false
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=laboratory.example.com:17053
+      - CORE_PEER_POLICY_CHECKER_PLUGIN= "OR('LaboratoryMSP.member')"
     volumes:
       - ./crypto-config/peerOrganizations/example.com/peers/laboratory.example.com/msp:/etc/hyperledger/msp/peer
     ports:
@@ -62,10 +78,14 @@ services:
     container_name: pharmacy.example.com
     image: hyperledger/fabric-peer
     environment:
-      - CORE_PEER_ADDRESS=pharmacy.example.com:7051
+      - CORE_PEER_ADDRESS=pharmacy.example.com:17053
       - CORE_PEER_LOCALMSPID=PharmacyMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer
       - CORE_PEER_TLS_ENABLED=false
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=pharmacy.example.com:17053
+      - CORE_PEER_POLICY_CHECKER_PLUGIN= "OR('PharmacyMSP.member')"
     volumes:
       - ./crypto-config/peerOrganizations/example.com/peers/pharmacy.example.com/msp:/etc/hyperledger/msp/peer
     ports:
@@ -75,10 +95,14 @@ services:
     container_name: insurance.example.com
     image: hyperledger/fabric-peer
     environment:
-      - CORE_PEER_ADDRESS=insurance.example.com:7051
+      - CORE_PEER_ADDRESS=insurance.example.com:17053
       - CORE_PEER_LOCALMSPID=InsuranceMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer
       - CORE_PEER_TLS_ENABLED=false
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=insurance.example.com:17053
+      - CORE_PEER_POLICY_CHECKER_PLUGIN= "OR('InsuranceMSP.member')"
     volumes:
       - ./crypto-config/peerOrganizations/example.com/peers/insurance.example.com/msp:/etc/hyperledger/msp/peer
     ports:
