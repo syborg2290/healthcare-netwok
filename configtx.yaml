@@ -1,9 +1,8 @@
-
 Organizations:
     - &OrdererOrg
         Name: OrdererOrg
         ID: OrdererMSP
-        MSPDir: /var/hyperledger/orderer/msp
+        MSPDir: crypto-config/ordererOrganizations/example.com/msp
         Policies:
             Readers:
                 Type: Signature
@@ -15,99 +14,188 @@ Organizations:
                 Type: Signature
                 Rule: "OR('OrdererMSP.admin')"
         OrdererEndpoints:
-            - healthcare_orderer.example.com:13050
+            - healthcare_orderer.example.com:17050
 
-    PatientOrg:
-        <<: *OrgDefaults
-        Name: PatientMSP
+    - &PatientOrg
+        Name: PatientOrg
         ID: PatientMSP
-        MSPDir: crypto-config/peerOrganizations/patient.example.com/msp
-        AnchorPeers:
-            - Host: peer0.patient.example.com
-              Port: 7051
+        MSPDir: crypto-config/peerOrganizations/example.com/peers/patient.example.com/msp
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('PatientMSP.admin', 'PatientMSP.client', 'PatientMSP.peer')"
+                Rule: "OR('PatientMSP.member')"
             Writers:
                 Type: Signature
-                Rule: "OR('PatientMSP.admin', 'PatientMSP.client', 'PatientMSP.peer')"
+                Rule: "OR('PatientMSP.member')"
             Admins:
                 Type: Signature
                 Rule: "OR('PatientMSP.admin')"
-            Endorsement:
-                Type: Signature
-                Rule: "OR('PatientMSP.peer')"
-    HospitalOrg:
-        <<: *OrgDefaults
-        Name: HospitalMSP
-        ID: HospitalMSP
-        MSPDir: crypto-config/peerOrganizations/hospital.example.com/msp
         AnchorPeers:
-            - Host: peer0.hospital.example.com
-              Port: 8051
+            - Host: patient.example.com
+              Port: 17053
+
+    - &HospitalOrg
+        Name: HospitalOrg
+        ID: HospitalMSP
+        MSPDir: crypto-config/peerOrganizations/example.com/peers/hospital.example.com/msp
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('HospitalMSP.admin', 'HospitalMSP.client', 'HospitalMSP.peer')"
+                Rule: "OR('HospitalMSP.member')"
             Writers:
                 Type: Signature
-                Rule: "OR('HospitalMSP.admin', 'HospitalMSP.client', 'HospitalMSP.peer')"
+                Rule: "OR('HospitalMSP.member')"
             Admins:
                 Type: Signature
                 Rule: "OR('HospitalMSP.admin')"
-            Endorsement:
-                Type: Signature
-                Rule: "OR('HospitalMSP.peer')"
-    LaboratoryOrg:
-        <<: *OrgDefaults
-        Name: LaboratoryMSP
-        ID: LaboratoryMSP
-        MSPDir: crypto-config/peerOrganizations/laboratory.example.com/msp
         AnchorPeers:
-            - Host: peer0.laboratory.example.com
-              Port: 9051
+            - Host: hospital.example.com
+              Port: 18053
+
+    - &LaboratoryOrg
+        Name: LaboratoryOrg
+        ID: LaboratoryMSP
+        MSPDir: crypto-config/peerOrganizations/example.com/peers/laboratory.example.com/msp
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('LaboratoryMSP.admin', 'LaboratoryMSP.client', 'LaboratoryMSP.peer')"
+                Rule: "OR('LaboratoryMSP.member')"
             Writers:
                 Type: Signature
-                Rule: "OR('LaboratoryMSP.admin', 'LaboratoryMSP.client', 'LaboratoryMSP.peer')"
+                Rule: "OR('LaboratoryMSP.member')"
             Admins:
                 Type: Signature
                 Rule: "OR('LaboratoryMSP.admin')"
-            Endorsement:
-                Type: Signature
-                Rule: "OR('LaboratoryMSP.peer')"
-    InsuranceOrg:
-        <<: *OrgDefaults
-        Name: InsuranceMSP
-        ID: InsuranceMSP
-        MSPDir: crypto-config/peerOrganizations/insurance.example.com/msp
         AnchorPeers:
-            - Host: peer0.insurance.example.com
-              Port: 10051
+            - Host: laboratory.example.com
+              Port: 19053
+
+    - &PharmacyOrg
+        Name: PharmacyOrg
+        ID: PharmacyMSP
+        MSPDir: crypto-config/peerOrganizations/example.com/peers/pharmacy.example.com/msp
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('InsuranceMSP.admin', 'InsuranceMSP.client', 'InsuranceMSP.peer')"
+                Rule: "OR('PharmacyMSP.member')"
             Writers:
                 Type: Signature
-                Rule: "OR('InsuranceMSP.admin', 'InsuranceMSP.client', 'InsuranceMSP.peer')"
+                Rule: "OR('PharmacyMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('PharmacyMSP.admin')"
+        AnchorPeers:
+            - Host: pharmacy.example.com
+              Port: 10053
+
+    - &InsuranceOrg
+        Name: InsuranceOrg
+        ID: InsuranceMSP
+        MSPDir: crypto-config/peerOrganizations/example.com/peers/insurance.example.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('InsuranceMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('InsuranceMSP.member')"
             Admins:
                 Type: Signature
                 Rule: "OR('InsuranceMSP.admin')"
-            Endorsement:
-                Type: Signature
-                Rule: "OR('InsuranceMSP.peer')"
-    PharmacyOrg:
-        <<: *OrgDefaults
-        Name: PharmacyMSP
-        ID: PharmacyMSP
-        MSPDir: crypto-config/peerOrganizations/pharmacy.example.com/msp
         AnchorPeers:
-            -
+            - Host: insurance.example.com
+              Port: 11053
+
+Capabilities:
+    Channel: &ChannelCapabilities
+        V2_0: true
+    Orderer: &OrdererCapabilities
+        V2_0: true
+    Application: &ApplicationCapabilities
+        V2_0: true
+
+Application: &ApplicationDefaults
+    Organizations:
+        Policies:
+            Readers:
+                Type: ImplicitMeta
+                Rule: "ANY Readers"
+            Writers:
+                Type: ImplicitMeta
+                Rule: "ANY Writers"
+            Admins:
+                Type: ImplicitMeta
+                Rule: "MAJORITY Admins"
+            LifecycleEndorsement:
+                Type: ImplicitMeta
+                Rule: "MAJORITY Endorsement"
+            Endorsement:
+                Type: ImplicitMeta
+                Rule: "MAJORITY Endorsement"
+    Capabilities:
+        <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+    OrdererType: solo
+    Addresses:
+        - healthcare_orderer.example.com:17050
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+    Capabilities:
+        <<: *OrdererCapabilities
 
 
+Profiles:
+    HealthCareOrdererGenesis:
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            HealthCareConsortium:
+                Organizations:
+                    - *PatientOrg
+                    - *HospitalOrg
+                    - *LaboratoryOrg
+                    - *PharmacyOrg
+                    - *InsuranceOrg
 
+    HealthCareChannel:
+        Consortium: HealthCareConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *PatientOrg
+                - *HospitalOrg
+                - *LaboratoryOrg
+                - *PharmacyOrg
+                - *InsuranceOrg
+            Capabilities:
+                <<: *ApplicationCapabilities
+            Policies:
+                # Define policies for the channel group
+                Readers:
+                    Type: Signature
+                    Rule: "OR('PatientOrg.member', 'HospitalOrg.member', 'LaboratoryOrg.member', 'PharmacyOrg.member', 'InsuranceOrg.member')"
+                Writers:
+                    Type: Signature
+                    Rule: "OR('PatientOrg.member', 'HospitalOrg.member', 'LaboratoryOrg.member', 'PharmacyOrg.member', 'InsuranceOrg.member')"
+                Admins:
+                    Type: Signature
+                    Rule: "OR('PatientOrg.admin', 'HospitalOrg.admin', 'LaboratoryOrg.admin', 'PharmacyOrg.admin', 'InsuranceOrg.admin')"
