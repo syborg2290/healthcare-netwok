@@ -1,0 +1,184 @@
+Organizations:
+  - &OrdererOrg
+    Name: OrdererOrg
+    ID: OrdererMSP
+    MSPDir: crypto-config/ordererOrganizations/example.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrdererMSP.admin')"
+      BlockValidation:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+    OrdererEndpoints:
+      - 'healthcare_orderer.example.com:13050'
+  - &PatientOrg
+    Name: PatientOrg
+    ID: PatientMSP
+    MSPDir: crypto-config/peerOrganizations/patient.example.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('PatientMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('PatientMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('PatientMSP.admin')"
+    AnchorPeers:
+      - Host: peer0.patient.example.com
+        Port: 12051
+  - &HospitalOrg
+    Name: HospitalOrg
+    ID: HospitalMSP
+    MSPDir: crypto-config/peerOrganizations/hospital.example.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('HospitalMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('HospitalMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('HospitalMSP.admin')"
+    AnchorPeers:
+      - Host: peer0.hospital.example.com
+        Port: 8051
+  - &LaboratoryOrg
+    Name: LaboratoryOrg
+    ID: LaboratoryMSP
+    MSPDir: crypto-config/peerOrganizations/laboratory.example.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('LaboratoryMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('LaboratoryMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('LaboratoryMSP.admin')"
+    AnchorPeers:
+      - Host: peer0.laboratory.example.com
+        Port: 14051
+  - &InsuranceOrg
+    Name: InsuranceOrg
+    ID: InsuranceMSP
+    MSPDir: crypto-config/peerOrganizations/insurance.example.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('InsuranceMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('InsuranceMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('InsuranceMSP.admin')"
+    AnchorPeers:
+      - Host: peer0.insurance.example.com
+        Port: 10051
+  - &PharmacyOrg
+    Name: PharmacyOrg
+    ID: PharmacyMSP
+    MSPDir: crypto-config/peerOrganizations/pharmacy.example.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('PharmacyMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('PharmacyMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('PharmacyMSP.admin')"
+    AnchorPeers:
+      - Host: peer0.pharmacy.example.com
+        Port: 15051
+
+Capabilities:
+  Channel: &ChannelCapabilities
+    V2_0: true
+
+  Orderer: &OrdererCapabilities
+    V2_0: true
+
+  Application: &ApplicationCapabilities
+    V2_0: true
+
+Application: &ApplicationDefaults
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+  Capabilities:
+    <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+  OrdererType: etcdraft
+  Addresses:
+    - healthcare_orderer.example.com:13050
+  BatchTimeout: 2s
+  BatchSize:
+    MaxMessageCount: 10
+    AbsoluteMaxBytes: 99 MB
+    PreferredMaxBytes: 512 KB
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+
+Profiles:
+  TwoOrgsOrdererGenesis:
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - *OrdererOrg
+      Capabilities:
+        <<: *OrdererCapabilities
+    Consortiums:
+      SampleConsortium:
+        Organizations:
+          - *PatientOrg
+          - *HospitalOrg
+          - *LaboratoryOrg
+          - *InsuranceOrg
+          - *PharmacyOrg
+  TwoOrgsChannel:
+    Consortium: SampleConsortium
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *PatientOrg
+        - *HospitalOrg
+        - *LaboratoryOrg
+        - *InsuranceOrg
+        - *PharmacyOrg
+      Capabilities:
+        <<: *ApplicationCapabilities
+
